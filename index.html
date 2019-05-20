@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Shopping List Items</title>
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div id="shopping-list">
+    <div class="header">
+      <h1>{{headerUppcase}}</h1>
+      <button class="btn btn-primary" v-if="state==='default'" @click="changeState('edit')">New Item</button>
+      <button class="btn btn-cancel" v-else @click="changeState('default')">Cancel</button>
+    </div>
+    <div class="add-item-form" v-if="state === 'edit'">
+      <input type="text" v-model='newItem' @keyup.enter='saveItem'  placeholder="Add new item">
+      <p>{{countCharacter}}/100</p>
+      <button class="btn btn-primary" @click='saveItem' :disabled="newItem.length == 0">New Item</button>
+    </div>
+    <p v-if="state === 'default'">Good job, you made your purchases</p>
+    <!-- <a :href="newItem" target="_blank">Link Dinamic</a> -->
+    <ul>
+      <li v-for='item in reverseItems' :class="{strikeout : item.purchased, priority : item.highPriority}" @click="sendPurchase(item)">{{item.label}}</li>
+    </ul>
+  </div>
+
+
+
+  <script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+  <script>
+    shoppingList = new Vue({
+      el: "#shopping-list",
+      data:{
+        state: 'default',
+        header: 'shopping list',
+        items: [
+          {
+            label: 'RedLabel',
+            purchased: false,
+            highPriority: true
+          },
+          {
+            label: 'Jagger',
+            purchased: false,
+            highPriority: false
+          },
+          {
+            label: 'Ron',
+            purchased: true,
+            highPriority: false
+          }
+        ],
+        newItem: ''
+      },
+      methods:{
+        saveItem: function(){
+          if (this.newItem.trim() != '')
+            this.items.push({
+              label: this.newItem, purchased: false, highPriority: false
+            });
+            this.newItem = '';
+        },
+        changeState: function(new_state){
+          this.state = new_state;
+        },
+        sendPurchase: function(item){
+          item.purchased = !item.purchased;
+        }
+      },
+      computed: {
+        headerUppcase: function(){
+          return this.header.toLocaleUpperCase();
+        },
+        reverseItems: function(){
+          return this.items.slice(0).reverse();
+        },
+        countCharacter: function(){
+          return this.newItem.length;
+        }
+      }
+    })
+  </script>
+</body>
+</html>
